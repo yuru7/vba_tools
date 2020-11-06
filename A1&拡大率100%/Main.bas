@@ -1,28 +1,34 @@
-Attribute VB_Name = "Main"
 Sub Main()
-    Dim Path As String: Path = ThisWorkbook.Worksheets("Sheet1").Range("targetDir").Value   '// ‘ÎÛƒtƒHƒ‹ƒ_ƒpƒX
-    Const cnsTitle = "ƒtƒHƒ‹ƒ_“à‚ÌƒGƒNƒZƒ‹ƒtƒ@ƒCƒ‹’ñoó‘Ô‰»" 'ƒ_ƒCƒAƒƒO‚Ìƒ^ƒCƒgƒ‹
+    Dim Path As String: Path = ThisWorkbook.Worksheets("Sheet1").Range("targetDir").Value   '// å¯¾è±¡ãƒ•ã‚©ãƒ«ãƒ€ãƒ‘ã‚¹
+    Const cnsTitle = "ãƒ•ã‚©ãƒ«ãƒ€å†…ã®ã‚¨ã‚¯ã‚»ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«æå‡ºçŠ¶æ…‹åŒ–" 'ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ã‚¿ã‚¤ãƒˆãƒ«
     
-    Dim Workbook As Workbook
-    Dim sheet As Object
+    Dim processYesNo As Integer
     
-    ' ƒtƒHƒ‹ƒ_‚Ì‘¶İŠm”F
+    ' ãƒ•ã‚©ãƒ«ãƒ€ã®å­˜åœ¨ç¢ºèª
     If Dir(Path, vbDirectory) = "" Then
-        MsgBox "w’è‚ÌƒtƒHƒ‹ƒ_‚Í‘¶İ‚µ‚Ü‚¹‚ñB", vbExclamation, cnsTitle
+        MsgBox "æŒ‡å®šã®ãƒ•ã‚©ãƒ«ãƒ€ã¯å­˜åœ¨ã—ã¾ã›ã‚“ã€‚", vbExclamation, cnsTitle
         Exit Sub
     End If
     
-    '// A1•Šg‘å—¦100%‚ğİ’è‚·‚é
+    processYesNo = MsgBox(Path & vbCrLf & vbCrLf & "ä¸Šè¨˜ãƒ•ã‚©ãƒ«ãƒ€å†…ã® Excel ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‡¦ç†ã—ã¾ã™ã€‚" _
+            & vbCrLf & "ã‚µãƒ–ãƒ•ã‚©ãƒ«ãƒ€ã‚‚å¯¾è±¡ã«ãªã‚Šã¾ã™ã€‚" _
+            & vbCrLf & vbCrLf & "å®Ÿè¡Œã—ã¾ã™ã‹ï¼Ÿ", vbYesNo + vbExclamation, cnsTitle)
+    If processYesNo = vbNo Then
+        Exit Sub
+    End If
+    
+    '// A1ï¼†æ‹¡å¤§ç‡100%ã‚’è¨­å®šã™ã‚‹
     Call setA1And100Per(Path)
 
+    MsgBox "å‡¦ç†ãŒçµ‚äº†ã—ã¾ã—ãŸã€‚", vbOKOnly + vbInformation, cnsTitle
 End Sub
 
-'// A1•Šg‘å—¦100%‚ğİ’è‚·‚é
+'// A1ï¼†æ‹¡å¤§ç‡100%ã‚’è¨­å®šã™ã‚‹
 Private Sub setA1And100Per(Path)
-    '// A1•Šg‘å—¦100“‚ğİ’è‚·‚é
+    '// A1ï¼†æ‹¡å¤§ç‡100ï¼…ã‚’è¨­å®šã™ã‚‹
     Call executeA1And100Per(Path)
     
-    '// ƒTƒuƒtƒHƒ‹ƒ_‚ğÄ‹A‚·‚é
+    '// ã‚µãƒ–ãƒ•ã‚©ãƒ«ãƒ€ã‚’å†å¸°ã™ã‚‹
     Dim f As Object
     With CreateObject("Scripting.FileSystemObject")
         For Each f In .GetFolder(Path).SubFolders
@@ -32,49 +38,52 @@ Private Sub setA1And100Per(Path)
 End Sub
 
 
-'// ExcelŒnƒtƒ@ƒCƒ‹‚Ì‚İAA1‚©‚ÂŠg‘å—¦100“‚É‚µ‚ÄAÅ‰‚ÌƒV[ƒg‚ğw’è‚µ‚Ä•Û‘¶‚·‚é
+'// Excelç³»ãƒ•ã‚¡ã‚¤ãƒ«ã®ã¿ã€A1ã‹ã¤æ‹¡å¤§ç‡100ï¼…ã«ã—ã¦ã€æœ€åˆã®ã‚·ãƒ¼ãƒˆã‚’æŒ‡å®šã—ã¦ä¿å­˜ã™ã‚‹
 Private Sub executeA1And100Per(Path)
+    Dim book As Workbook
+    Dim sheet As Object
+    
     Const cnsDIR = "\*.*"
-    Dim strFileName As String 'ˆ—’†‚Ìƒtƒ@ƒCƒ‹–¼‚ğŠi”[‚·‚é•Ï”
-    Dim fileAndPath As String 'ˆ—’†‚Ìƒtƒ@ƒCƒ‹–¼iƒpƒXŠÜ‚Şj‚ğŠi”[‚·‚é•Ï”
+    Dim strFileName As String 'å‡¦ç†ä¸­ã®ãƒ•ã‚¡ã‚¤ãƒ«åã‚’æ ¼ç´ã™ã‚‹å¤‰æ•°
+    Dim fileAndPath As String 'å‡¦ç†ä¸­ã®ãƒ•ã‚¡ã‚¤ãƒ«åï¼ˆãƒ‘ã‚¹å«ã‚€ï¼‰ã‚’æ ¼ç´ã™ã‚‹å¤‰æ•°
     Dim pos As Long
-
-    ' æ“ª‚Ìƒtƒ@ƒCƒ‹–¼‚Ìæ“¾
+    
+    ' å…ˆé ­ã®ãƒ•ã‚¡ã‚¤ãƒ«åã®å–å¾—
     strFileName = Dir(Path & cnsDIR, vbNormal)
-    ' ƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚ç‚È‚­‚È‚é‚Ü‚ÅŒJ‚è•Ô‚·
+    ' ãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚‰ãªããªã‚‹ã¾ã§ç¹°ã‚Šè¿”ã™
     Do While strFileName <> ""
     
-        ' ƒGƒNƒZƒ‹ƒtƒ@ƒCƒ‹‚Ì‚İ‚ğˆ—‘ÎÛ‚Æ‚·‚é
+        ' ã‚¨ã‚¯ã‚»ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®ã¿ã‚’å‡¦ç†å¯¾è±¡ã¨ã™ã‚‹
         pos = InStrRev(strFileName, ".")
         If Not LCase(Mid(strFileName, pos + 1)) Like "xls*" Then
-            ' Ÿ‚Ìƒtƒ@ƒCƒ‹–¼‚ğæ“¾
+            ' æ¬¡ã®ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å–å¾—
             GoTo Continue
         End If
         
-        ' ©ƒtƒ@ƒCƒ‹iA1&Šg‘å—¦100“.xlsmj‚Íœ‚­
+        ' è‡ªãƒ•ã‚¡ã‚¤ãƒ«ï¼ˆA1&æ‹¡å¤§ç‡100ï¼….xlsmï¼‰ã¯é™¤ã
         If strFileName = ThisWorkbook.Name Then
             GoTo Continue
         End If
     
-        ' ƒGƒNƒZƒ‹ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+        ' ã‚¨ã‚¯ã‚»ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
         fileAndPath = Path + "\" + strFileName
-        Set Workbook = Workbooks.Open(fileAndPath)
-    
-        'ˆê”Ôæ“ª‚ÌƒV[ƒg‚©‚ç‡‚Éƒ‹[ƒvˆ—‚ğs‚¤
-        For Each sheet In ActiveWorkbook.Sheets
-            sheet.Activate                 '‘ÎÛ‚ÌƒV[ƒg‚ğƒAƒNƒeƒBƒu‚É‚·‚é
-            ActiveSheet.Range("A1").Select 'ƒV[ƒg‚ÌA1‚ğ‘I‘ğ‚·‚é
-            ActiveWindow.Zoom = 100        'Šg‘å”{—¦‚ğ100‚Éİ’è‚·‚é
+        Set book = Workbooks.Open(fileAndPath)
+        
+        'ä¸€ç•ªå…ˆé ­ã®ã‚·ãƒ¼ãƒˆã‹ã‚‰é †ã«ãƒ«ãƒ¼ãƒ—å‡¦ç†ã‚’è¡Œã†
+        For Each sheet In book.Sheets
+            sheet.Activate                 'å¯¾è±¡ã®ã‚·ãƒ¼ãƒˆã‚’ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ã™ã‚‹
+            ActiveSheet.Range("A1").Select 'ã‚·ãƒ¼ãƒˆã®A1ã‚’é¸æŠã™ã‚‹
+            ActiveWindow.Zoom = 100        'æ‹¡å¤§å€ç‡ã‚’100ã«è¨­å®šã™ã‚‹
         Next sheet
-        Sheets(1).Select
+        book.Sheets(1).Select
     
-        ' ƒGƒNƒZƒ‹ƒtƒ@ƒCƒ‹‚ğ•Û‘¶‚µ‚Ä•Â‚¶‚é
-        Workbook.Save
-        Workbook.Close
+        ' ã‚¨ã‚¯ã‚»ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿å­˜ã—ã¦é–‰ã˜ã‚‹
+        book.Save
+        book.Close
     
 Continue:
     
-        ' Ÿ‚Ìƒtƒ@ƒCƒ‹–¼‚ğæ“¾
+        ' æ¬¡ã®ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å–å¾—
         strFileName = Dir()
     Loop
 End Sub
